@@ -6,7 +6,7 @@ from collections import Counter
 #add your input filename here 
 input_filename = "data.csv" 
 output_filename = "MailsConversation.json"
-
+samples_to_train = -1 # to train all samples set samples_to_train = -1
 print(f"READING {input_filename}")
 df = pd.read_csv(input_filename) #reading the raw email files 
 
@@ -244,17 +244,18 @@ for conv in data:
         prompt = ''
         completion = ''
 
+print("[INFO] Removing All Duplicates Conversations.....")
+final_conversations = []
+duplicates = []
+for i in range(len(conversations)):
+  if conversations[i]['prompt'] not in duplicates:
+    duplicates.append(conversations[i]['prompt'])
+    final_conversations.append({
+        'prompt':conversations[i]['prompt'],
+        'completion':conversations[i]['completion'],
+    })
 print("SAVING RESULTS ARE [MailsConversation.json].....")
 #saving the conversations in the form of json data,
-print(len(data))
+print("Total Conversations: ", len(final_conversations))
 with open(output_filename,'w') as f:
-  json.dump(conversations,f)
-
-p = 0 
-c = 0
-for d in data:
-  
-  p += len(d['prompt'].split())
-  c += len(d['completion'].split())
-
-print(p,c)
+  json.dump(final_conversations[:samples_to_train],f)
